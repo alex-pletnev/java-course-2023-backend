@@ -21,4 +21,11 @@ public class WebClientConfiguration {
         return WebClient.builder().uriBuilderFactory(factory).build();
 
     }
+
+    @Bean
+    public WebClient botClient() {
+        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory("http://localhost:8080");
+        return WebClient.builder().uriBuilderFactory(factory).build();
+
+    }
 }
