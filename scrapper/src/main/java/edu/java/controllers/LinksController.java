@@ -39,7 +39,7 @@ public class LinksController {
     AddLinkRequest addLinkRequest
     ) throws URISyntaxException {
         LOGGER.info("add link: {} for tg-chat id: {} ", addLinkRequest.link(), chatId);
-        return new LinkResponse(1, new URI("example"));
+        return new LinkResponse(1, new URI("addExample"));
     }
 
     @DeleteMapping
@@ -49,7 +49,7 @@ public class LinksController {
     RemoveLinkRequest removeLinkRequest
     ) throws URISyntaxException {
         LOGGER.info("delete link: {} for tg-chat id: {} ", removeLinkRequest.link(), chatId);
-        return new LinkResponse(1, new URI("example"));
+        return new LinkResponse(1, new URI("deleteExample"));
     }
 
 }

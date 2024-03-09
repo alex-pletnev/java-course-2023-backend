@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class ScrapperServiceClient {
 
-    private static final String TG_CHAT_URL = "/tg-chat";
+    private static final String TG_CHAT_URL = "/tg-chat/{id}";
     private static final String LINKS_URL = "/links";
     private static final String TG_CHAT_ID_HEADER = "Tg-Chat-Id";
 
@@ -37,7 +37,7 @@ public class ScrapperServiceClient {
     public Mono<HttpStatusCode> registerNewChat(long tgChatId) {
         return scrapperClient
             .post()
-            .uri(TG_CHAT_URL + "/{id}", tgChatId)
+            .uri(TG_CHAT_URL, tgChatId)
             .retrieve()
             .onStatus(HttpStatusCode::isError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(apiErrorResponse -> {
@@ -50,7 +50,7 @@ public class ScrapperServiceClient {
     public Mono<HttpStatusCode> deleteChat(long tgChatId) {
         return scrapperClient
             .delete()
-            .uri(TG_CHAT_URL + "/{id}", tgChatId)
+            .uri(TG_CHAT_URL, tgChatId)
             .retrieve()
             .onStatus(HttpStatusCode::isError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(apiErrorResponse -> {
