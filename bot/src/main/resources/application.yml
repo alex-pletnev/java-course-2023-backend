@@ -1,6 +1,5 @@
 app:
-  telegram-token: unset
-
+  telegram-token: ${TELEGRAM_TOKEN}
 spring:
   application:
     name: bot
