@@ -2,9 +2,11 @@ package edu.java.scrapper;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import edu.java.configuration.ApplicationConfig;
 import edu.java.dto.github.Owner;
 import edu.java.dto.github.Repository;
 import edu.java.services.GithubService;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
@@ -23,10 +25,17 @@ class GithubServiceTest {
 
     @BeforeEach
     void init() {
+        ApplicationConfig applicationConfig = new ApplicationConfig(
+            new ApplicationConfig.Scheduler(false, Duration.ZERO, Duration.ZERO),
+            "mock",
+            "mock",
+            "mock"
+        );
         wireMockServer = new WireMockServer();
         wireMockServer.start();
         WireMock.configureFor("localhost", wireMockServer.port());
-        githubService = new GithubService(WebClient.create("http://localhost:" + wireMockServer.port()));
+        githubService =
+            new GithubService(WebClient.create("http://localhost:" + wireMockServer.port()), applicationConfig);
     }
 
     @AfterEach
