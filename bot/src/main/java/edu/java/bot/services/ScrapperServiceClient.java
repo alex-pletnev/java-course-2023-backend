@@ -1,7 +1,9 @@
 package edu.java.bot.services;
 
 import edu.java.bot.dto.AddLinkRequest;
+import edu.java.bot.dto.AddTgChatRequest;
 import edu.java.bot.dto.ApiErrorResponse;
+import edu.java.bot.dto.LinkResponse;
 import edu.java.bot.dto.ListLinksResponse;
 import edu.java.bot.dto.RemoveLinkRequest;
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +19,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class ScrapperServiceClient {
 
-    private static final String TG_CHAT_URL = "/tg-chat/{id}";
+    private static final String TG_CHAT_URL = "/tg-chat";
     private static final String LINKS_URL = "/links";
     private static final String TG_CHAT_ID_HEADER = "Tg-Chat-Id";
 
@@ -34,10 +36,11 @@ public class ScrapperServiceClient {
         this.scrapperClient = WebClient.builder().uriBuilderFactory(factory).build();
     }
 
-    public Mono<HttpStatusCode> registerNewChat(long tgChatId) {
+    public Mono<HttpStatusCode> registerNewChat(AddTgChatRequest addTgChatRequest) {
         return scrapperClient
             .post()
-            .uri(TG_CHAT_URL, tgChatId)
+            .uri(TG_CHAT_URL)
+            .bodyValue(addTgChatRequest)
             .retrieve()
             .onStatus(HttpStatusCode::isError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(apiErrorResponse -> {
@@ -50,7 +53,7 @@ public class ScrapperServiceClient {
     public Mono<HttpStatusCode> deleteChat(long tgChatId) {
         return scrapperClient
             .delete()
-            .uri(TG_CHAT_URL, tgChatId)
+            .uri(TG_CHAT_URL + "/{id}", tgChatId)
             .retrieve()
             .onStatus(HttpStatusCode::isError, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(apiErrorResponse -> {
@@ -74,7 +77,7 @@ public class ScrapperServiceClient {
             .bodyToMono(ListLinksResponse.class);
     }
 
-    public Mono<ListLinksResponse> removeLink(long tgChatId, RemoveLinkRequest removeLinkRequest) {
+    public Mono<HttpStatusCode> removeLink(long tgChatId, RemoveLinkRequest removeLinkRequest) {
         return scrapperClient
             .method(HttpMethod.DELETE)
             .uri(LINKS_URL)
@@ -86,10 +89,10 @@ public class ScrapperServiceClient {
                     LOGGER.info(apiErrorResponse);
                     return Mono.empty();
                 }))
-            .bodyToMono(ListLinksResponse.class);
+            .bodyToMono(HttpStatusCode.class);
     }
 
-    public Mono<ListLinksResponse> addLink(long tgChatId, AddLinkRequest addLinkRequest) {
+    public Mono<LinkResponse> addLink(long tgChatId, AddLinkRequest addLinkRequest) {
         return scrapperClient
             .post()
             .uri(LINKS_URL)
@@ -101,7 +104,7 @@ public class ScrapperServiceClient {
                     LOGGER.info(apiErrorResponse);
                     return Mono.empty();
                 }))
-            .bodyToMono(ListLinksResponse.class);
+            .bodyToMono(LinkResponse.class);
     }
 
 }
