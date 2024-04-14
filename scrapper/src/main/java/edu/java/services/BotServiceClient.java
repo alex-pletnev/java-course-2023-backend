@@ -28,6 +28,7 @@ public class BotServiceClient {
     }
 
     public Mono<HttpStatusCode> postLinkUpdate(LinkUpdate linkUpdate) {
+        LOGGER.info("BotServiceClient start processing new post request with {} in body", linkUpdate);
         return botClient
             .post()
             .uri("/updates")

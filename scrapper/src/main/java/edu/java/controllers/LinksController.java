@@ -4,9 +4,9 @@ import edu.java.dto.AddLinkRequest;
 import edu.java.dto.LinkResponse;
 import edu.java.dto.ListLinksResponse;
 import edu.java.dto.RemoveLinkRequest;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+import edu.java.services.LinkService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -21,35 +21,38 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/links")
+@RequiredArgsConstructor
 public class LinksController {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private final LinkService linkService;
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public ListLinksResponse getAllLinksByTgChatId(@RequestHeader("Tg-Chat-Id") long chatId) {
-        LOGGER.info("get all links by tg-chat id: {} ", chatId);
-        return new ListLinksResponse(new ArrayList<>(), 0);
+    public ListLinksResponse getAllLinksByTgChatId(@RequestHeader("Tg-Chat-Id") long tgChatId) {
+        LOGGER.info("get all links by tg-chat id: {} ", tgChatId);
+        return linkService.getAllLinksByTgChatId(tgChatId);
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public LinkResponse addLinkForTgChatId(
-        @RequestHeader("Tg-Chat-Id") long chatId, @RequestBody
-    AddLinkRequest addLinkRequest
-    ) throws URISyntaxException {
-        LOGGER.info("add link: {} for tg-chat id: {} ", addLinkRequest.link(), chatId);
-        return new LinkResponse(1, new URI("addExample"));
+        @RequestHeader("Tg-Chat-Id") long tgChatId,
+        @RequestBody @Valid AddLinkRequest addLinkRequest
+    ) {
+        LOGGER.info("add link: {} for tg-chat id: {} ", addLinkRequest.link(), tgChatId);
+        return linkService.addLinkForTgChatId(tgChatId, addLinkRequest);
     }
 
     @DeleteMapping
-    @ResponseStatus(HttpStatus.OK)
-    public LinkResponse deleteLinkForTgChatId(
-        @RequestHeader("Tg-Chat-Id") long chatId, @RequestBody
-    RemoveLinkRequest removeLinkRequest
-    ) throws URISyntaxException {
-        LOGGER.info("delete link: {} for tg-chat id: {} ", removeLinkRequest.link(), chatId);
-        return new LinkResponse(1, new URI("deleteExample"));
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLinkForTgChatId(
+        @RequestHeader("Tg-Chat-Id") long tgChatId,
+        @RequestBody @Valid RemoveLinkRequest removeLinkRequest
+    ) {
+        LOGGER.info("delete link: {} for tg-chat id: {} ", removeLinkRequest.link(), tgChatId);
+        linkService.deleteLinkForTgChatId(tgChatId, removeLinkRequest);
     }
 
 }

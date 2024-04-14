@@ -15,7 +15,10 @@ public record ApplicationConfig(
     @NotBlank
     String stackOverflowBaseUri,
     @NotBlank
-    String githubBaseUri
+    String githubBaseUri,
+    @NotBlank
+    String githubApiToken
+
 
 ) {
 
